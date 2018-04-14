@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
@@ -15,16 +14,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class listarProduto
+ * Servlet implementation class ExcluirProduto
  */
-@WebServlet("/listarProduto")
-public class listarProduto extends HttpServlet {
+@WebServlet("/excluirproduto")
+public class ExcluirProduto extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public listarProduto() {
+    public ExcluirProduto() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -48,43 +47,36 @@ public class listarProduto extends HttpServlet {
 			String url ="jdbc:mysql://localhost/supermercado";
 			String username = "root";
 			String password = "root";
-			
+		
 			//Realizar a conexao com o BD
 			Connection conexao = DriverManager.getConnection(url, username ,password);
 			
 			//SQL
-			String sql =" select idproduto, codigoproduto,"
-					         + " descricaoproduto from produto";
-			
+			String sql = "DELETE FROM produto WHERE idproduto =" + request.getParameter("idproduto");
+					
 			//Prepara o sql para o bd
 			PreparedStatement ps = conexao.prepareStatement(sql);
-			
+					
 			//Executar o sql
-			ResultSet rs = ps.executeQuery();
-			out.println("<h1>Produtos</h1><br />");
-			out.println("Codigo  ----  Descrição<br />");
-			while(rs.next()){
-				out.println ("<a href=\"detalhaproduto?idproduto=" + rs.getString("idproduto") + "\">" + rs.getInt("codigoproduto") + "</a> " + "_______" + " " +
-							rs.getString("descricaoproduto") + "  " + "<a href=\"excluirproduto?idproduto=" + rs.getString("idproduto") +"\">" + "Excluir</a>" + "<br />");
-			}
-			out.println("<a href=\"incluirproduto.html\"><h1>Incluir produto</h1></a>");
+			ps.executeUpdate(sql);
+			out.println("<h1>Excluido com sucesso</h1><br />");
 			
+					
 			
-			//fechar o resultSet
-			rs.close();
 			//fechar o prepreStaemnt
 			ps.close();
 			//fechar conexao
 			conexao.close();
-			
-			
+					
+					
 		} catch (ClassNotFoundException | SQLException e) {
 			//Mostra o erro
 			e.printStackTrace();
 		}
-		
-		//Fechar o html
-		out.println("</boby></html>");
+				
+			//Fechar o html
+			out.println("</boby></html>");
+       
 		}
 
 }

@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
@@ -15,16 +14,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class listarProduto
+ * Servlet implementation class IncluirProduto
  */
-@WebServlet("/listarProduto")
-public class listarProduto extends HttpServlet {
+@WebServlet("/incluirproduto")
+public class IncluirProduto extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public listarProduto() {
+    public IncluirProduto() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -33,58 +32,60 @@ public class listarProduto extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		//|Recupera meus parametro
+		String codigo = request.getParameter("codigo");
+		String descricao = request.getParameter("descricao");
+		String fabricante = request.getParameter("fabricante");
+		String preco = request.getParameter("preco");
+	
 		//obter objeto resposta
 		PrintWriter out = response.getWriter();
-		
+			
 		//HTML
 		out.println("<html><head><title>Produto</title></head>");
 		out.println("<boby>");
-		
+				
 		//Conectar no banco de dados
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			
+				
 			//Criar String de conexao co o BD
 			String url ="jdbc:mysql://localhost/supermercado";
 			String username = "root";
 			String password = "root";
-			
+				
 			//Realizar a conexao com o BD
 			Connection conexao = DriverManager.getConnection(url, username ,password);
 			
 			//SQL
-			String sql =" select idproduto, codigoproduto,"
-					         + " descricaoproduto from produto";
-			
+			String sql = "INSERT INTO supermercado.produto(codigoproduto, descricaoproduto, fabricanteproduto, precoproduto) VALUES(?,?,?,?)";
+							
 			//Prepara o sql para o bd
 			PreparedStatement ps = conexao.prepareStatement(sql);
-			
+			ps.setString(1, codigo);
+			ps.setString(2, descricao);
+			ps.setString(3, fabricante);
+			ps.setString(4, preco);
+							
 			//Executar o sql
-			ResultSet rs = ps.executeQuery();
-			out.println("<h1>Produtos</h1><br />");
-			out.println("Codigo  ----  Descrição<br />");
-			while(rs.next()){
-				out.println ("<a href=\"detalhaproduto?idproduto=" + rs.getString("idproduto") + "\">" + rs.getInt("codigoproduto") + "</a> " + "_______" + " " +
-							rs.getString("descricaoproduto") + "  " + "<a href=\"excluirproduto?idproduto=" + rs.getString("idproduto") +"\">" + "Excluir</a>" + "<br />");
-			}
-			out.println("<a href=\"incluirproduto.html\"><h1>Incluir produto</h1></a>");
-			
-			
-			//fechar o resultSet
-			rs.close();
+			ps.executeUpdate();
+			out.println("<h1>Incluido com sucesso</h1><br />");
+					
+							
+								
 			//fechar o prepreStaemnt
 			ps.close();
 			//fechar conexao
 			conexao.close();
-			
-			
+							
+							
 		} catch (ClassNotFoundException | SQLException e) {
 			//Mostra o erro
 			e.printStackTrace();
 		}
-		
-		//Fechar o html
-		out.println("</boby></html>");
-		}
+						
+			//Fechar o html
+			out.println("</boby></html>");
+	}
 
 }
